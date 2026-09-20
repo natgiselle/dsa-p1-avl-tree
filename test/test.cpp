@@ -1,45 +1,92 @@
-#include <catch2/catch_test_macros.hpp>
+/** 
+ * Name: Natalie Ortiz
+ * UFID: 62121115
+*/
+#include "catch/catch_amalgamated.cpp"
 #include <iostream>
-
-// uncomment and replace the following with your own headers
-// #include "AVL.h"
+#include <string>
+#include <sstream>
+#include <vector>
+#include <ctime> // for true randomization
+#include <cstdlib>
+#include <algorithm>
+#include "../src/avl_tree.h"
 
 using namespace std;
 
-// the syntax for defining a test is below. It is important for the name to be unique, but you can group multiple tests with [tags]. A test can have [multiple][tags] using that syntax.
-TEST_CASE("Example Test Name - Change me!", "[flag]"){
-	// instantiate any class members that you need to test here
-	int one = 1;
 
-	// anything that evaluates to false in a REQUIRE block will result in a failing test 
-	REQUIRE(one == 0); // fix me!
-
-	// all REQUIRE blocks must evaluate to true for the whole test to pass
-	REQUIRE(false); // also fix me!
+/** ID: makes unique letters-only name from 8-digit ID */
+static string getNameFromId(const string& id) {
+	string name;
+	for (char c : id) {
+		name += char('a' + (c-'0')); // makes 8 digit ID unique letters only
+	}
+	return name;
 }
 
-TEST_CASE("Test 2", "[flag]"){
-	// you can also use "sections" to share setup code between tests, for example:
-	int one = 1;
 
-	SECTION("num is 2") {
-		int num = one + 1;
-		REQUIRE(num == 2);
-	};
+/** TEST CASE 1: 5 commands */
+TEST_CASE("Invalid commands", "[invalid]"){
+	SECTION("commands") {
+		AVLTree tree;
+		REQUIRE_FALSE(tree.insert("Gise11e", "43599999"));
+		REQUIRE_FALSE(tree.insert("N9talie", "12345678"));
+		REQUIRE_FALSE(tree.insert("Nat@lie", "12345678"));
+		REQUIRE_FALSE(tree.insert("Natalie", "1234567"));
+		REQUIRE_FALSE(tree.insert("Natalie", "123456789"));
+		REQUIRE_FALSE(tree.insert("Natalie", "1234567A"));
+		REQUIRE_FALSE(tree.insert("Natalie", "12345678b"));
+		REQUIRE(tree.insert("Natalie", "12345678")); // the only successful one
 
-	SECTION("num is 3") {
-		int num = one + 2;
-		REQUIRE(num == 3);
-	};
-
-	// each section runs the setup code independently to ensure that they don't affect each other
+		REQUIRE(tree.inorder().size() == 1);
+	}
 }
 
-// you must write 5 unique, meaningful tests for credit on the testing portion of this project!
+/** TEST CASE 2: rotations and insertion ACTUAL VS EXPECTED */
 
-// the provided test from the template is below.
+TEST_CASE("Insert Test with all 4 rotation cases", "[rotation]"){
+	vector<string> expectedPre = {"Thirty", "Twenty", "Forty"};
+	vector<string> expectedIn = {"Twenty", "Thirty", "Forty"};
 
-TEST_CASE("Example BST Insert", "[flag]"){
+	SECTION("LL (R rotation)") {
+		AVLTree tree;
+		REQUIRE(tree.insert("Forty","40000000"));
+		REQUIRE(tree.insert("Thirty","30000000"));
+		REQUIRE(tree.insert("Twenty","20000000"));
+		REQUIRE(tree.preorder() == expectedPre);
+		REQUIRE(tree.inorder() == expectedIn);
+	}
+	
+	SECTION("RR (L rotation)") {
+		AVLTree tree;
+		REQUIRE(tree.insert("Twenty","20000000"));
+		REQUIRE(tree.insert("Thirty","30000000"));
+		REQUIRE(tree.insert("Forty","40000000"));
+		REQUIRE(tree.preorder() == expectedPre);
+		REQUIRE(tree.inorder() == expectedIn);
+	}
+
+	SECTION("LR (LR doubled rotation)") {
+		AVLTree tree;
+		REQUIRE(tree.insert("Forty","40000000"));
+		REQUIRE(tree.insert("Twenty","20000000"));
+		REQUIRE(tree.insert("Thirty","30000000"));
+		REQUIRE(tree.preorder() == expectedPre);
+		REQUIRE(tree.inorder() == expectedIn);
+	}
+
+	SECTION("RL (RL doubled rotation)") {
+		AVLTree tree;
+		REQUIRE(tree.insert("Twenty","20000000"));
+		REQUIRE(tree.insert("Forty","40000000"));
+		REQUIRE(tree.insert("Thirty","30000000"));
+		REQUIRE(tree.preorder() == expectedPre);
+		REQUIRE(tree.inorder() == expectedIn);
+	}
+}
+
+/** TEST CASE 3: NODE REMOVAL, INSERTION AND VERIFICATION */
+TEST_CASE("Insert 100 nodes, remove 10 random, verify it inorder", "[scaling]"){
 	/*
 		MyAVLTree tree;   // Create a Tree object
 		tree.insert(3);
@@ -50,4 +97,58 @@ TEST_CASE("Example BST Insert", "[flag]"){
 		REQUIRE(expectedOutput.size() == actualOutput.size());
 		REQUIRE(actualOutput == expectedOutput);
 	*/
+	AVLTree tree;
+	vector<string> IDs;
+	vector<string> expectedOutput;
+	vector<string> actualOutput;
+
+	unsigned seed = static_cast<unsigned>(time(nullptr));
+	srand(seed);
+	INFO("randomized seed = " << seed);
+
+	// inserts 100 unique IDs of 8-digit length
+	while (IDs.size() < 100) {
+		string id = to_string(10000000 + rand() % 90000000);
+		if (count(IDs.begin(), IDs.end(), id) == 0 ) {
+			IDs.push_back(id);
+			expectedOutput.push_back(getNameFromId(id));
+			REQUIRE(tree.insert(getNameFromId(id), id));
+		}
+	}
+
+
+	// verifies the added nodes
+	actualOutput = tree.inorder();
+	REQUIRE(expectedOutput.size() == actualOutput.size());
+	sort(expectedOutput.begin(), expectedOutput.end()); // using the include <algorithm> header to make it easier rather than implementing my own func for testing
+	REQUIRE(expectedOutput == actualOutput);
+
+	// remove 10 nodes out of random and ensures each removal succeeds
+	vector<string> removedNames;
+	for (int i = 0; i < 10; i++) {
+		int pick = static_cast<int>(rand()) % IDs.size();
+		string id = IDs[pick];
+		string name = getNameFromId(id);
+		
+		REQUIRE(tree.remove(id));
+
+		IDs.erase(IDs.begin() + pick);
+		
+		expectedOutput.erase(find(expectedOutput.begin(), expectedOutput.end(), name));
+		removedNames.push_back(name);
+	}
+
+	// verification for if the next 90 actually match our desired output
+	actualOutput = tree.inorder();
+	REQUIRE(actualOutput.size() == 90);
+	REQUIRE(expectedOutput.size() == actualOutput.size());
+	REQUIRE(expectedOutput == actualOutput);
+
+
+	// this makes sure that all the names we removed are truly removed so that means they CANNOT be appearing within the actual output anymore
+	for (const string& removed : removedNames) {
+		REQUIRE(find(actualOutput.begin(), actualOutput.end(), removed) == actualOutput.end());
+	}
 }
+
+// second test case should stay failed
