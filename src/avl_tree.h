@@ -20,11 +20,12 @@ using namespace std;
 #include <iostream>
 #include <vector>
 struct TreeNode {
-    int val;
+    string name;
+    int id; // insteaf of val(data) use id as the actual data and name for string data as well
     int height;
     TreeNode* left;
     TreeNode* right;
-    TreeNode(int data): val(data), left(nullptr), right(nullptr) {}
+    TreeNode(string name_, int id_): name(name_), id(id_), left(nullptr), right(nullptr) {}
 };
 
 class AVLTree {
@@ -53,9 +54,14 @@ void updateHeight(TreeNode* root) {
     root->height = 1 + max(height(root->left), height(root->right));
 }
 
+int levelCount(TreeNode* root) {
+    return height(root);
+}
 
-
-
+TreeNode* searchById(TreeNode* root, int id) {
+    if (root == nullptr || root->id == id) return root;
+    if (id < root->id) return searchById(root->left, id); // recursively call in order to search for the right node that has these attirbutes for name and id
+}
 /**
  * 
  * rotate right would mean that the children are skewed to the left so u rotate y to the right 
