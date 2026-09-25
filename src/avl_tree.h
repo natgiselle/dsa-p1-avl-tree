@@ -71,6 +71,17 @@ TreeNode* searchByName(TreeNode* root, string& name, vector<int>& searchMatches 
     searchByName(root->right, name, searchMatches);
 }
 
+
+bool findNthOrder(TreeNode* root, int& nodes, int& foundId) {
+    if (root == nullptr) return false;
+    if (findNthOrder(root->left, nodes, foundId)) return true;
+    if (nodes == 0) {
+        foundId = root->id;
+        return true;
+    }
+    nodes--; // continue count down
+    return findNthOrder(root->right, nodes, foundId);
+}
 /**
  * 
  * rotate right would mean that the children are skewed to the left so u rotate y to the right 
