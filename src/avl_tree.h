@@ -96,8 +96,23 @@ TreeNode* rotateLeft(TreeNode* y) {
     return x;
 }
 
-TreeNode* rotateLeftRight(TreeNode* y) {
-    if (balance > 1 )
+TreeNode* rotateLeftRight(TreeNode* root) {
+    root->right = rotateLeft(root->left);
+    return rotateRight(root);
+}
+
+TreeNode* rotateRightLeft(TreeNode* root) {
+    root->right = rotateRight(root->right);
+    return rotateLeft(root);
+}
+
+TreeNode* updateBalanceFactor(TreeNode* root) {
+    int balance = balanceFactor(root);
+    if (balance > 1 && balanceFactor(root->left) >= 0) return rotateRight(root);
+    if (balance < -1 && balanceFactor(root->right) <= 0) return rotateLeft(root);
+    if (balance < -1 && balanceFactor(root->left) < 0) return rotateLeftRight(root);
+    if (balance < -1 && balanceFactor(root->right) > 0) return rotateRightLeft(root);
+    return root;
 }
 
 
