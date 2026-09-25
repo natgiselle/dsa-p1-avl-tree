@@ -62,6 +62,15 @@ TreeNode* searchById(TreeNode* root, int id) {
     if (root == nullptr || root->id == id) return root;
     if (id < root->id) return searchById(root->left, id); // recursively call in order to search for the right node that has these attirbutes for name and id
 }
+
+TreeNode* searchByName(TreeNode* root, string& name, vector<int>& searchMatches ) {
+    // visits root, then goes left or right to find the name
+    if (root == nullptr) return; 
+    if (root->name == name) searchMatches.push_back(root->id);
+    searchByName(root->left, name, searchMatches); 
+    searchByName(root->right, name, searchMatches);
+}
+
 /**
  * 
  * rotate right would mean that the children are skewed to the left so u rotate y to the right 
