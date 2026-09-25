@@ -28,15 +28,84 @@ struct TreeNode {
 
 class AVLTree {
     public:
-    bool insert(const string& name, const string& id) { return false; }
-    bool remove(const string& id) { return false; }
-    vector<string> inorder() { return {}; }
-    vector<string> preorder() { return {}; }
-    vector<string> postorder() { return {}; }
-    TreeNode* rotateRight(TreeNode* y);
-    TreeNode* rotateLeft(TreeNode* y);
+    // helpers for the public declaration of the function logic I already made
+    bool insert(const string& name, const string& strId) {
+        if (!nameIsValid(name) || !idIsValid(strId)) return false;
+        int id = stoi(strId);
+        bool success = false;
+        root = insertHelper(root, name, id, success);
+        return success;
+    }
+    
+    bool remove(const string& strId) {
+        if (!idIsValid(strId)) return false;
+        int id = stoi(strId);
+        bool success = false;
+        root = removeHelper(root, id, success);
+        return success;
+    }
+
+
+    vector<string> searchByName(const string& name) {
+        vector<string> results;
+        if(!nameIsValid(name)) {
+            results.push_back("unsuccessful");
+            return results;
+        }
+        vector<int> search_matches;
+        searchByNameHelper(root, name, search_matches);
+        if (search_matches.empty())  {
+            results.push_back("unsuccessful");
+            return results;
+        }
+        for (int id : search_matches) results.push_back(to_string(id));
+        return results;
+    }
+
+    string searchById(const string& strId) {
+        if(!idIsValid(strId)) return "unsuccessful";
+        TreeNode* found = searchByIdHelper(root, stoi(strId));
+        if (found) return found->name;
+        else {
+            return "unsuccessful";
+        }
+    }
+
+    bool removeInorder(int nodes) {
+        int foundId;
+        if(!findNthOrder(root, nodes, foundId)) return false;
+        bool success = false;
+        root = removeHelper(root, foundId, success);
+        return success;
+    }
+
+    int printLevel(){
+        return height(root);
+    }
+
+
+    vector<string> inorder() { 
+        vector<string> out;
+        inorderHelper(root, out);
+        return out;
+    }
+    vector<string> preorder() {
+        vector<string> out;
+        preorderHelper(root, out);
+        return out;
+    }
+    vector<string> postorder() {
+        vector<string> out;
+        postorderHelper(root, out);
+        return out;
+    }
+    
+    ~AVLTree() {
+        treeDestructor(root);
+    }
 
     private: 
+        TreeNode* root = nullptr;
         // validation for name and ID
         bool idIsValid(const string& id) {
             // ^ means must start with any digit from 0-9 and be repeated 8 times 
@@ -71,20 +140,28 @@ class AVLTree {
             return height(root);
         }
 
-        TreeNode* searchById(TreeNode* root, int id) {
-            if (root == nullptr || root->id == id) return root;
-            if (id < root->id) return searchById(root->left, id); // recursively call in order to search for the right node that has these attirbutes for name and id
-            return searchById(root->right, id);
+        // tree detructor deleting left subtree first, then right subtree, and lastly deleting the root so that we can still access its children before deleting root itself which is why root is deleted last!
+        void treeDestructor(TreeNode* root) {
+            if(root == nullptr) return;
+            treeDestructor(root->left);
+            treeDestructor(root->right);
+            delete root; 
         }
 
-        TreeNode* searchByName(TreeNode* root, string& name, vector<int>& searchMatches ) {
+
+        TreeNode* searchByIdHelper(TreeNode* root, int id) {
+            if (root == nullptr || root->id == id) return root;
+            if (id < root->id) return searchByIdHelper(root->left, id); // recursively call in order to search for the right node that has these attirbutes for name and id
+            return searchByIdHelper(root->right, id);
+        }
+
+        void searchByNameHelper(TreeNode* root, const string& name, vector<int>& searchMatches ) {
             // visits root, then goes left or right to find the name
             if (root == nullptr) return; 
             if (root->name == name) searchMatches.push_back(root->id);
-            searchByName(root->left, name, searchMatches); 
-            searchByName(root->right, name, searchMatches);
+            searchByNameHelper(root->left, name, searchMatches); 
+            searchByNameHelper(root->right, name, searchMatches);
         }
-
 
         bool findNthOrder(TreeNode* root, int& nodes, int& foundId) {
             if (root == nullptr) return false;
@@ -117,9 +194,6 @@ class AVLTree {
 
             return x;
         }
-
-
-
 
         TreeNode* rotateLeft(TreeNode* y) {
             // have x be y's right child
@@ -220,25 +294,26 @@ class AVLTree {
         }
 
         // NLR
-        void preorder(TreeNode* root) {
+        void preorderHelper(TreeNode* root, vector<string>& out) {
             if (!root) return;
-            std::cout << root->name << " ";
-            preorder(root->left);
-            preorder(root->right);
+            //std::cout << root->name << " ";
+            out.push_back(root->name);
+            preorderHelper(root->left, out);
+            preorderHelper(root->right, out);
         }
 
-        void inorder(TreeNode* root) {
+        void inorderHelper(TreeNode* root, vector<string>& out) {
             if (!root) return;
-            inorder(root->left);
-            std::cout << root->name << " ";
-            inorder(root->right);
+            inorderHelper(root->left, out);
+            out.push_back(root->name);
+            inorderHelper(root->right, out);
         }
 
-        void postorder(TreeNode* root) {
+        void postorderHelper(TreeNode* root, vector<string>& out) {
             if (!root) return;
-            postorder(root->left); // prints al the contents in the left subtree
-            postorder(root->right); // prints all the contents in the right subttree
-            std::cout << root->name << " ";
+            postorderHelper(root->left, out); // prints al the contents in the left subtree
+            postorderHelper(root->right, out); // prints all the contents in the right subttree
+            out.push_back(root->name);
         }
 
 };
