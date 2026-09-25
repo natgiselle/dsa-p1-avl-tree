@@ -39,6 +39,14 @@ class AVLTree {
     TreeNode* rotateLeft(TreeNode* y);
 };
 
+// validation for name and ID
+bool idIsValid(const string& id) {
+    // ^ means must start with any digit from 0-9 and be repeated 8 times 
+    // and $ ends
+    regex idPattern("^[0-9]{8}$");
+    return regex_search(id, idPattern);
+}
+
 // helper functions
 int height (TreeNode* root) {
     if (root == nullptr) return 0;
