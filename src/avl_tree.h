@@ -58,7 +58,12 @@ class AVLTree {
             results.push_back("unsuccessful");
             return results;
         }
-        for (int id : search_matches) results.push_back(to_string(id));
+        for (int id : search_matches) {
+            string IDstr = to_string(id);
+
+            while (IDstr.size() < 8) IDstr = "0" + IDstr;
+            results.push_back(IDstr);
+        }
         return results;
     }
 
@@ -110,14 +115,14 @@ class AVLTree {
         bool idIsValid(const string& id) {
             // ^ means must start with any digit from 0-9 and be repeated 8 times 
             // and $ ends
-            regex idPattern("^[0-9]{8}$");
+            static const regex idPattern("^[0-9]{8}$");
             return regex_search(id, idPattern);
         }
 
         bool nameIsValid(const string& name) {
             // matches exact characters to ensure the User doesnt input numbers or special characters 
             // regex is cool! I find it much better than a traditional manner of doing it like a bunch of if statements
-            regex namePattern("^[A-Za-z\\s]+$");
+            static const regex namePattern("^[A-Za-z\\s]+$"); // static const to make sure it doesnt have to rebuild each time
             return regex_search(name, namePattern);
         }
 
@@ -211,7 +216,7 @@ class AVLTree {
         }
 
         TreeNode* rotateLeftRight(TreeNode* root) {
-            root->right = rotateLeft(root->left);
+            root->left = rotateLeft(root->left);
             return rotateRight(root);
         }
 
@@ -224,7 +229,7 @@ class AVLTree {
             int balance = balanceFactor(root);
             if (balance > 1 && balanceFactor(root->left) >= 0) return rotateRight(root);
             if (balance < -1 && balanceFactor(root->right) <= 0) return rotateLeft(root);
-            if (balance < -1 && balanceFactor(root->left) < 0) return rotateLeftRight(root);
+            if (balance > 1 && balanceFactor(root->left) < 0) return rotateLeftRight(root);
             if (balance < -1 && balanceFactor(root->right) > 0) return rotateRightLeft(root);
             return root;
         }
