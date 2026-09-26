@@ -28,7 +28,7 @@ int main() {
 		string command;
 		in >> command;
 		
-		// makes it so that the user can usethe insert function
+		// makes it so that the user can use the insert function,remove function , etc.
 		if (command == "insert") {
 			string discard, name, strId;
 			getline(in, discard, '"');
@@ -50,14 +50,14 @@ int main() {
 		}
 
 		else if (command == "removeInorder") {
-			// needs to ensure that the id is only digits
-			string N;
-			in >> N;
-			bool isNum = !N.empty();
-			for (char c : N) {
+			// needs to ensure that the N is only digits
+			string n;
+			in >> n;
+			bool isNum = !n.empty();
+			for (char c : n) {
 				if (c < '0' || c > '9') isNum = false;
 			}
-			if (isNum && tree.removeInorder(stoi(N))) cout << "successful\n";
+			if (isNum && tree.removeInorder(stoi(n))) cout << "successful\n";
 			else cout << "unsuccessful\n";
 		}
 
@@ -67,7 +67,7 @@ int main() {
 			getline(in >> ws, str);
 
 			// the double quotes are taken off to extract the name
-			if (str.size() >= 2 && str.front() == '"' && str.back() = '"') {
+			if (str.size() >= 2 && str.front() == '"' && str.back() == '"') {
 				string name = str.substr(1, str.size() - 2);
 				for (const string& s : tree.searchByName(name)) cout << s << "\n";
 			}
@@ -76,7 +76,15 @@ int main() {
 			}
 		}
 
-		
+		else if (command == "printInorder") printStudentNames(tree.inorder());
+		else if (command == "printPreorder") printStudentNames(tree.preorder());
+		else if (command == "printPostorder") printStudentNames(tree.postorder());
+		else if (command == "printLevelCount") cout << tree.printLevel() << "\n";
+
+		// this block executes when the user inputs an invalid command or one that does not match that of the commands above
+		else {
+			cout << "unsuccessful\n"; 
+		}
 	}
 
 	return 0;

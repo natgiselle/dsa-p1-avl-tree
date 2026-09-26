@@ -1,3 +1,5 @@
+
+
 /** 
  * Name: Natalie Ortiz
  * UFID: 62121115
@@ -151,4 +153,41 @@ TEST_CASE("Insert 100 nodes, remove 10 random, verify it inorder", "[scaling]"){
 	}
 }
 
-// second test case should stay failed
+/** TEST CASE 4: THREE DELETION CASES */
+
+TEST_CASE("Deletion cases", "[delete]") {
+	AVLTree tree;
+
+	tree.insert("Bulbasaur", "20000000");
+	tree.insert("Azurill", "10000000");
+	tree.insert("Dwebble", "40000000");
+	tree.insert("Chikorita", "30000000");
+	tree.insert("Espeon", "50000000");
+
+	SECTION("no children") {
+		REQUIRE(tree.remove("10000000"));
+		REQUIRE(tree.inorder() == vector<string>{"Bulbasaur", "Chikorita", "Dwebble", "Espeon"});
+	}
+	
+	SECTION("1 child") {
+		REQUIRE(tree.remove("50000000"));
+		REQUIRE(tree.remove("40000000"));
+		REQUIRE(tree.inorder() == vector<string>{"Azurill", "Bulbasaur", "Chikorita"});
+	}
+	SECTION("2 children") {
+		REQUIRE(tree.remove("40000000"));
+		REQUIRE(tree.preorder() == vector<string>{"Bulbasaur", "Azurill", "Espeon", "Chikorita"});
+	}
+}
+
+/** TEST CASE 5: TRYING OUT THE EDGE CASES */
+TEST_CASE("Edge cases", "[edge]") {
+	AVLTree tree;
+
+	REQUIRE_FALSE(tree.remove("12345678")); // removes an empty tree
+	REQUIRE(tree.printLevel() == 0); // 0 LEVELS for empty tree 
+	REQUIRE(tree.insert("Maluma", "12345678")); 
+	REQUIRE_FALSE(tree.insert("Shakira", "12345678")); // ID duplicate is not accepted (NO two students should have the same ID )
+	REQUIRE_FALSE(tree.removeInorder(5)); // N is past the end of tree
+	REQUIRE(tree.searchById("99999999") == "unsuccessful"); // ID is not in the tree
+}
