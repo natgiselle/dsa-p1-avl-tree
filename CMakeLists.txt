@@ -24,7 +24,6 @@ add_executable(Main
         # add your own header files below - should be automatically added in CLion
         # example (can also separate with newlines):
         # src/AVL.h src/AVL.cpp
-        src/main.cpp
         src/avl_tree.cpp
         )
         
@@ -34,7 +33,6 @@ add_executable(Tests
         # add your own header files below - should be automatically added in CLion
         # example (can also separate with newlines):
         # src/AVL.h src/AVL.cpp
-        test/test.cpp
         src/avl_tree.cpp
         )
         

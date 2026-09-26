@@ -36,7 +36,7 @@ int main() {
 			in >> strId;
 			if (tree.insert(name, strId)) cout << "successful\n";
 			else {
-			cout << "unsuccessful\n";
+				cout << "unsuccessful\n";
 			}
 		}
 

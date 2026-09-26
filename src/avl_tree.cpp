@@ -121,11 +121,7 @@ void AVLTree::updateHeight(TreeNode* root) {
     root->height = 1 + max(height(root->left), height(root->right));
 }
 
-int AVLTree::levelCount(TreeNode* root) {
-    return height(root);
-}
-
-        // tree detructor deleting left subtree first, then right subtree, and lastly deleting the root so that we can still access its children before deleting root itself which is why root is deleted last!
+// tree detructor deleting left subtree first, then right subtree, and lastly deleting the root so that we can still access its children before deleting root itself which is why root is deleted last!
 void AVLTree::treeDestructor(TreeNode* root) {
     if(root == nullptr) return;
     treeDestructor(root->left);
@@ -215,10 +211,10 @@ TreeNode* AVLTree::updateBalanceFactor(TreeNode* root) {
 }
 
 
-        // the three different cases
-        // if it is an empty tree
-        // if its not, see if the value we are inserting is less than or greater than the root
-        // then if it is, we use a recursive call on our insert function in order to get the node with that respective key assigned to its proper placement within the BST
+// the three different cases
+// if it is an empty tree
+// if its not, see if the value we are inserting is less than or greater than the root
+// then if it is, we use a recursive call on our insert function in order to get the node with that respective key assigned to its proper placement within the BST
 TreeNode* AVLTree::insertHelper(TreeNode* root, const string& name, int id, bool& success) {
     if (root == nullptr) {
         success = true;
@@ -247,12 +243,12 @@ TreeNode* AVLTree::removeHelper(TreeNode* root, int id, bool& success) {
 
     else if (id > root->id) root->right = removeHelper(root->right, id, success);
 
-    // is when key == root->val whichis where we want to be in order to see what to do when removing
+    // is when key == root->val which is where we want to be in order to see what to do when removing
     else {
         // if the node we want to remove has only a left child
         // if the node we want to remove has only right child
         // two children if the node we want to remove has both a left and right child
-        // if it has two children we what we will want to do is replace the value with its sucessor and then delete the root and return child and then delete the child since we now have two nodes with the same value and we do not want to have stray duplicates in our BST
+        // if it has two children we what we will want to do is replace the value with its successor and then delete the root and return child and then delete the child since we now have two nodes with the same value and we do not want to have stray duplicates in our BST
         success = true;
         if (root->left == nullptr)  {
             TreeNode* child = root->right;
@@ -275,28 +271,28 @@ TreeNode* AVLTree::removeHelper(TreeNode* root, int id, bool& success) {
             root->right = removeHelper(root->right, root->id, placeholder);
         }
     }
+    updateHeight(root);
     return root;
 }
 
-        // NLR
+// NLR
 void AVLTree::preorderHelper(TreeNode* root, vector<string>& out) {
     if (!root) return;
-    //std::cout << root->name << " ";
     out.push_back(root->name);
     preorderHelper(root->left, out);
     preorderHelper(root->right, out);
 }
-
+// LNR
 void AVLTree::inorderHelper(TreeNode* root, vector<string>& out) {
     if (!root) return;
     inorderHelper(root->left, out);
     out.push_back(root->name);
     inorderHelper(root->right, out);
 }
-
+// LRN
 void AVLTree::postorderHelper(TreeNode* root, vector<string>& out) {
     if (!root) return;
-    postorderHelper(root->left, out); // prints al the contents in the left subtree
+    postorderHelper(root->left, out); // prints all the contents in the left subtree
     postorderHelper(root->right, out); // prints all the contents in the right subttree
     out.push_back(root->name);
 }

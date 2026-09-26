@@ -28,7 +28,7 @@ struct TreeNode {
 
 class AVLTree {
     public:
-        // helpers for the public declaration of the function logic I already made
+        // public interface that I used for main()
         bool insert(const string& name, const string& strId);
         bool remove(const string& strId);
         vector<string> searchByName(const string& name);
@@ -51,7 +51,6 @@ class AVLTree {
         int height(TreeNode* root);
         int balanceFactor(TreeNode* root);
         void updateHeight(TreeNode* root);
-        int levelCount(TreeNode* root);
         // tree detructor deleting left subtree first, then right subtree, and lastly deleting the root so that we can still access its children before deleting root itself which is why root is deleted last!
         void treeDestructor(TreeNode* root);
         TreeNode* searchByIdHelper(TreeNode* root, int id);
