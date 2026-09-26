@@ -51,7 +51,7 @@ class AVLTree {
         int height(TreeNode* root);
         int balanceFactor(TreeNode* root);
         void updateHeight(TreeNode* root);
-        // tree detructor deleting left subtree first, then right subtree, and lastly deleting the root so that we can still access its children before deleting root itself which is why root is deleted last!
+        // tree destructor deleting left subtree first, then right subtree, and lastly deleting the root so that we can still access its children before deleting root itself which is why root is deleted last!
         void treeDestructor(TreeNode* root);
         TreeNode* searchByIdHelper(TreeNode* root, int id);
         void searchByNameHelper(TreeNode* root, const string& name, vector<int>& searchMatches);

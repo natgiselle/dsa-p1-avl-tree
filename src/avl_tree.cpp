@@ -121,7 +121,7 @@ void AVLTree::updateHeight(TreeNode* root) {
     root->height = 1 + max(height(root->left), height(root->right));
 }
 
-// tree detructor deleting left subtree first, then right subtree, and lastly deleting the root so that we can still access its children before deleting root itself which is why root is deleted last!
+// tree destructor deleting left subtree first, then right subtree, and lastly deleting the root so that we can still access its children before deleting root itself which is why root is deleted last!
 void AVLTree::treeDestructor(TreeNode* root) {
     if(root == nullptr) return;
     treeDestructor(root->left);
@@ -132,7 +132,7 @@ void AVLTree::treeDestructor(TreeNode* root) {
 
 TreeNode* AVLTree::searchByIdHelper(TreeNode* root, int id) {
     if (root == nullptr || root->id == id) return root;
-    if (id < root->id) return searchByIdHelper(root->left, id); // recursively call in order to search for the right node that has these attirbutes for name and id
+    if (id < root->id) return searchByIdHelper(root->left, id); // recursively call in order to search for the right node that has these attributes for name and id
     return searchByIdHelper(root->right, id);
 }
 
@@ -293,6 +293,6 @@ void AVLTree::inorderHelper(TreeNode* root, vector<string>& out) {
 void AVLTree::postorderHelper(TreeNode* root, vector<string>& out) {
     if (!root) return;
     postorderHelper(root->left, out); // prints all the contents in the left subtree
-    postorderHelper(root->right, out); // prints all the contents in the right subttree
+    postorderHelper(root->right, out); // prints all the contents in the right subtree
     out.push_back(root->name);
 }
